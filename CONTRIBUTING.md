@@ -3,7 +3,6 @@
  1. [Getting Involved](#getting-involved)
  2. [Reporting Bugs](#reporting-bugs)
  3. [Contributing Code](#contributing-code)
- 4. [Quality Bands](#quality-bands)
 
 ## Getting Involved
 
@@ -21,22 +20,8 @@ After you made sure that you have found a new bug, here are some tips for creati
  
 ## Contributing Code
 
-Coming soon! We are still migrating this project from our private Subversion repository. If you are interested in contributing code to this project, please contact [Ian Buchanan](mailto:ian.buchanan@versionone.com).
-
-## Quality Bands
-
-Open source software evolves over time. A young project may be little more than some ideas and a kernel of unstable code. As a project matures, source code, UI, tests, and APIs will become more stable. To help consumers understand what they are getting, we characterize every release with one of the following quality bands.
-
-### Seed
-
-The initial idea of a product. The code may not always work. Very little of the code may be covered by tests. Documentation may be sparse. All APIs are considered "private" and are expected to change. Please expect to work with developers to use and maintain the product.
-
-### Sapling
-
-The product is undergoing rapid growth. The code works. Test coverage is on the rise. Documentation is firming up. Some APIs may be public but are subject to change. Please expect to inform developers where information is insufficient to self-serve.
-
-### Mature
-
-The product is stable. The code will continue to evolve with minimum breaking changes. Documentation is sufficient for self-service. APIs are stable.
+All pull requests are welcome as long as they have a clear explanation.
+Maintainers needed!
+If you'd like to be a maintainer, contact [Mike Alexander](mailto:mikealexander1860@gmail.com)
 
 [issues]: https://github.com/versionone/VersionOne.SDK.Python/issues
