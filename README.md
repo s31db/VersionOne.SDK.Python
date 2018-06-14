@@ -464,6 +464,8 @@ run `python setup.py install`, or just copy the v1pysdk folder into your PYTHONP
 
 ## Revision History
 
+2018-06-13 v0.5.1 - PyPi upload so it's available via pip as "v1pysdk".
+
 2018-06-12 v0.5 - Dynamic Python3 support added.
 
   Add page(), sort(), queryAll(), find(), max_length(), length(), and support for len() usage to 

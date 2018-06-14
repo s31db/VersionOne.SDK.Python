@@ -20,7 +20,7 @@ with open("README.md", "r") as f:
 
 setup(
   name = "v1pysdk",
-  version = "0.5.0",
+  version = "0.5.1",
   description = "VersionOne API client",
   author = "Joe Koberg (VersionOne, Inc.)",
   author_email = "Joe.Koberg@versionone.com",
