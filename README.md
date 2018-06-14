@@ -1,5 +1,8 @@
 # VersionOne Python SDK #
 
+_Officially distributed via PyPi (pip) as: __v1pysdk___<br>
+_An older version of this package, which follows flows with this version numbering, was distributed as 'v1pysdk-unoffical'_
+
 The VersionOne Python SDK is an open-source and community supported client for the VersionOne API.
 
 As an open-sourced and community supported project, the VersionOne Python SDK is not formally supported by VersionOne.
