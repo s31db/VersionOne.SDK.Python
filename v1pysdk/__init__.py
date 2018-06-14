@@ -1,5 +1,5 @@
 
-
+name = "v1pysdk"
 """
 The external interface for the v1pysdk package.  Right now there is only one
 class, "V1Meta", which exposes the types and operations found in a specified
