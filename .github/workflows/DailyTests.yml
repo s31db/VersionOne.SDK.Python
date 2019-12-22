@@ -34,7 +34,8 @@ jobs:
       run: |
         pip install setuptools
         python ./setup.py test
-    - name: Test with pytest
-      run: |
-        pip install pytest
-        pytest
+# Temporarily commented out until support is added
+#    - name: Test with pytest
+#      run: |
+#        pip install pytest
+#        pytest

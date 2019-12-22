@@ -12,7 +12,7 @@ def process_queries(queries):
         try:
           asset._v1_refresh()
           yield str(asset)
-        except Exception, e:
+        except Exception as e:
           yield 'Error! %s(%s)'%(asset._v1_asset_type_name, asset._v1_oid)
 
 all_assets = list(process_queries())
