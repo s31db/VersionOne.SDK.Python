@@ -1,3 +1,9 @@
+**MAINTAINER NEEDED**  
+_This fork is no longer maintained though at last check (2023-09-06) it does still seem to be one of the most up-to-date._  
+If you'd like to make your fork the primary one, please contact me and I'd be happy to pass the PyPi ownership to you.
+
+---
+
 # VersionOne Python SDK #
 
 _Officially distributed via PyPi (pip) as: __v1pysdk___<br>
