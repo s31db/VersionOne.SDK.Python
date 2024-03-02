@@ -16,8 +16,7 @@ class TestV1Query(TestV1CommonSetup):
             item=None
             try:
                 items = v1.AssetType.select('Name').where(Name='Story').page(size=5)
-                item = items.first() #triggers actual query to happen
-                size = len(items)
+                size = len(list(items))
             except:
                 querySucceeded=False
 
@@ -34,8 +33,7 @@ class TestV1Query(TestV1CommonSetup):
             item=None
             try:
                 items = v1.Story.select('Name').page(size=5)
-                item = items.first() #triggers actual query to happen
-                size = len(items)
+                size = len(list(items))
             except:
                 querySucceeded=False
 
@@ -56,8 +54,7 @@ class TestV1Query(TestV1CommonSetup):
             item=None
             try:
                 items = v1.Epic.select('Name').page(size=5)
-                item = items.first() #triggers actual query to happen
-                size = len(items)
+                size = len(list(items))
             except:
                 querySucceeded=False
 
@@ -79,8 +76,7 @@ class TestV1Query(TestV1CommonSetup):
             item=None
             try:
                 items = v1.Scope.select('Name').page(size=5)
-                item = items.first() #triggers actual query to happen
-                size = len(items)
+                size = len(list(items))
             except:
                 querySucceeded=False
 
@@ -98,8 +94,7 @@ class TestV1Query(TestV1CommonSetup):
             item=None
             try:
                 items = v1.Task.select('Name').page(size=5)
-                item = items.first() #triggers actual query to happen
-                size = len(items)
+                size = len(list(items))
             except:
                 querySucceeded=False
 
@@ -136,27 +131,16 @@ class TestV1Query(TestV1CommonSetup):
         """
         with PublicTestServerConnection.getV1Meta() as v1:
             foundActuals=False
-            exceptionReached=False
-            try:
-                tasks = v1.Task.select('Name','Actuals.Value.@Sum').page(size=30)
-                tasks.first() #perform the actual query
-                if len(tasks) <= 0:
-                    self.skipTest("Test server contains no Tasks")
-                    return
-                else:
-                    for t in tasks:
-                        if 'Actuals.Value.@Sum' in t.data:
-                            foundActuals=True
-                            break
-            except:
-                exceptionReached=True
+            tasks = v1.Task.select('Name','Actuals.Value.@Sum').page(size=30)
+
+            for t in tasks:
+                if 'Actuals.Value.@Sum' in t.data:
+                    foundActuals=True
+                    break
             else:
-                if not foundActuals:
-                    self.skipTest("Test server Tasks contained no Actuals.Value's")
-                    return
-
-
-            self.assertFalse(exceptionReached)
+                self.skipTest("Test server contains no Tasks")
+            if not foundActuals:
+                self.skipTest("Test server Tasks contained no Actuals.Value's")
 
     def test_find_query(self):
         """Creates a story, then does a find to see if it can be located by a partial name from a separate
@@ -177,8 +161,8 @@ class TestV1Query(TestV1CommonSetup):
             size = 0
             firstName = ""
             try:
-                findItems = v1find.Story.select('Name').find(text=searchName, field='Name')
-                findItem = findItems.first() #actually run the query
+                findItems = list(v1find.Story.select('Name').find(text=searchName, field='Name'))
+                findItem = findItems[0]
                 size = len(findItems)
                 firstName = findItem.Name
             except Exception as e:

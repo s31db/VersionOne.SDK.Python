@@ -191,7 +191,7 @@ class V1Server(object):
     if exception:
       self.handle_non_xml_response(body, exception, msg, postdata)
 
-      self.logger.warn("{0} during {1}".format(exception, msg))
+      self.logger.warning("{0} during {1}".format(exception, msg))
       if postdata is not None:
          self.logger.warn(postdata)
     document = ElementTree.fromstring(body)
