@@ -81,12 +81,13 @@ class V1Server(object):
         :param address: target hostname
         :param instance: instance
         :param username: credentials (username)
-        :param password: credentials (password)
-        :param token: credentials (authentication token)
+        :param password: credentials (password) or (authentication token)
         :param scheme: HTTP scheme
         :param instance_url: instance URL
         :param logparent: logger prefix
         :param loglevel: logging level
+        :param use_password_as_token: Use password as token
+        :param use_oauth_path: Use OAuth path
         """
         if instance_url:
             self.instance_url = instance_url
@@ -203,7 +204,7 @@ class V1Server(object):
         verb = "HTTP POST to " if postdata else "HTTP GET from "
         msg = verb + path
         self.logger.info(msg)
-        print(path, query)
+        # print(path, query)
         exception, body = self.fetch(path, query=query, postdata=postdata)
         if exception:
             self.handle_non_xml_response(body, exception, msg, postdata)
