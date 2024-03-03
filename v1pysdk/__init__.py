@@ -1,4 +1,3 @@
-
 name = "v1pysdk"
 """
 The external interface for the v1pysdk package.  Right now there is only one
@@ -9,4 +8,3 @@ VersionOne server (defaulting to localhost/VersionOne.Web).
 
 from .v1meta import V1Meta
 from .v1poll import V1Poll
-

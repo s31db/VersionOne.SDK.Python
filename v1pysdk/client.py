@@ -2,17 +2,28 @@ import logging, time, base64
 
 import sys
 
-if (sys.version_info < (3, 0)):
+if sys.version_info < (3, 0):
     # Python2 way of doing this
     import urllib2 as theUrlLib  # must be a name matching the Python3 urllib.request
-    from urllib2 import Request, urlopen, HTTPError, HTTPBasicAuthHandler, HTTPCookieProcessor
+    from urllib2 import (
+        Request,
+        urlopen,
+        HTTPError,
+        HTTPBasicAuthHandler,
+        HTTPCookieProcessor,
+    )
     from urllib import urlencode
     from urlparse import urlunparse, urlparse
 else:
     # Python3 way of doing this
     import urllib.request as theUrlLib  # must be a name matching the Python2 urllib2
     import urllib.error, urllib.parse
-    from urllib.request import Request, urlopen, HTTPBasicAuthHandler, HTTPCookieProcessor
+    from urllib.request import (
+        Request,
+        urlopen,
+        HTTPBasicAuthHandler,
+        HTTPCookieProcessor,
+    )
     from urllib.error import HTTPError
     from urllib.parse import urlencode
     from urllib.parse import urlunparse, urlparse
@@ -27,7 +38,7 @@ except ImportError:
 NTLM_FOUND = False
 
 try:
-    if (sys.version_info < (3, 0)):
+    if sys.version_info < (3, 0):
         from ntlm.HTTPNtlmAuthHandler import HTTPNtlmAuthHandler
     else:
         from ntlm3.HTTPNtlmAuthHandler import HTTPNtlmAuthHandler
@@ -36,13 +47,13 @@ except ImportError:
 else:
     NTLM_FOUND = True
 
-
     class CustomHTTPNtlmAuthHandler(HTTPNtlmAuthHandler):
         # The following code was a recommended change to the existing.  However unittesting proves that it
         # and the existing obscure authentication failures.  There seems to be no actual reason to be doing
         # this unless there was a particular issue with the HTTPNtlmAuthHandler in some specific version of
         # urllib2 for Python2 that no longer exists.  Using the default handler provably works correctly
         pass
+
     # """ A version of HTTPNtlmAuthHandler that handles errors (better).
     #    The default version doesn't use `self.parent.open` in it's
     #    error handler, and completely bypasses the normal `OpenerDirector`
@@ -72,9 +83,19 @@ class V1AssetNotFoundError(V1Error):
 class V1Server(object):
     "Accesses a V1 HTTP server as a client of the XML API protocol"
 
-    def __init__(self, address="localhost", instance="VersionOne.Web", username='', password='', scheme="https",
-                 instance_url=None, logparent=None, loglevel=logging.ERROR, use_password_as_token=False,
-                 use_oauth_path=False):
+    def __init__(
+        self,
+        address="localhost",
+        instance="VersionOne.Web",
+        username="",
+        password="",
+        scheme="https",
+        instance_url=None,
+        logparent=None,
+        loglevel=logging.ERROR,
+        use_password_as_token=False,
+        use_oauth_path=False,
+    ):
         """
         scheme and object's instance_url attributes.
         If *token* is not None a HTTP header will be added to each request.
@@ -93,17 +114,17 @@ class V1Server(object):
             self.instance_url = instance_url
             parsed = urlparse(instance_url)
             self.address = parsed.netloc
-            self.instance = parsed.path.strip('/')
+            self.instance = parsed.path.strip("/")
             self.scheme = parsed.scheme
         else:
             self.address = address
-            self.instance = instance.strip('/')
+            self.instance = instance.strip("/")
             self.scheme = scheme
-            self.instance_url = self.build_url('')
+            self.instance_url = self.build_url("")
         self.AUTH_HANDLERS = [HTTPBasicAuthHandler]
         if NTLM_FOUND:
             self.AUTH_HANDLERS.append(CustomHTTPNtlmAuthHandler)
-        modulelogname = 'v1pysdk.client'
+        modulelogname = "v1pysdk.client"
         logname = "%s.%s" % (logparent, modulelogname) if logparent else None
         self.logger = logging.getLogger(logname)
         self.logger.setLevel(loglevel)
@@ -113,18 +134,22 @@ class V1Server(object):
         self._install_opener()
         # On-premise installations will not allow token based auth on usual path
         if use_oauth_path is True:
-            self.rest_api_path = 'rest-1.oauth.v1'
+            self.rest_api_path = "rest-1.oauth.v1"
         else:
-            self.rest_api_path = 'rest-1.v1'
+            self.rest_api_path = "rest-1.v1"
 
     def _install_opener(self):
-        base_url = self.build_url('')
+        base_url = self.build_url("")
         password_manager = theUrlLib.HTTPPasswordMgrWithDefaultRealm()
-        password_manager.add_password(realm=None, uri=base_url, user=self.username, passwd=self.password)
-        handlers = [HandlerClass(password_manager) for HandlerClass in self.AUTH_HANDLERS]
+        password_manager.add_password(
+            realm=None, uri=base_url, user=self.username, passwd=self.password
+        )
+        handlers = [
+            HandlerClass(password_manager) for HandlerClass in self.AUTH_HANDLERS
+        ]
         self.opener = theUrlLib.build_opener(*handlers)
         if self.use_password_as_token:
-            self.opener.addheaders.append(('Authorization', 'Bearer ' + self.password))
+            self.opener.addheaders.append(("Authorization", "Bearer " + self.password))
         self.opener.add_handler(HTTPCookieProcessor())
 
     def http_get(self, url):
@@ -133,19 +158,19 @@ class V1Server(object):
         response = self.opener.open(request)
         return response
 
-    def http_post(self, url, data=''):
+    def http_post(self, url, data=""):
         encodedData = data
         # encode to byte data as is needed if  it's a string
         if isinstance(data, str):
-            encodedData = data.encode('utf-8')
+            encodedData = data.encode("utf-8")
         request = Request(url, encodedData)
         request.add_header("Content-Type", "text/xml;charset=UTF-8")
         response = self.opener.open(request)
         return response
 
-    def build_url(self, path, query='', fragment='', params=''):
+    def build_url(self, path, query="", fragment="", params=""):
         "So we dont have to interpolate urls ad-hoc"
-        path = self.instance + '/' + path.strip('/')
+        path = self.instance + "/" + path.strip("/")
         if isinstance(query, dict):
             query = urlencode(query)
         url = urlunparse((self.scheme, self.address, path, params, query, fragment))
@@ -153,22 +178,24 @@ class V1Server(object):
 
     def _debug_headers(self, headers):
         self.logger.debug("Headers:")
-        for hdr in str(headers).split('\n'):
+        for hdr in str(headers).split("\n"):
             self.logger.debug("  %s" % hdr)
 
     def _debug_body(self, body, headers):
         try:
-            ctype = headers['content-type']
+            ctype = headers["content-type"]
         except AttributeError:
             ctype = None
-        if ctype is not None and ctype[:5] == 'text/':
+        if ctype is not None and ctype[:5] == "text/":
             self.logger.debug("Body:")
-            for line in str(body).split('\n'):
+            for line in str(body).split("\n"):
                 self.logger.debug("  %s" % line)
         else:
-            self.logger.debug("Body: non-textual content (Content-Type: %s). Not logged." % ctype)
+            self.logger.debug(
+                "Body: non-textual content (Content-Type: %s). Not logged." % ctype
+            )
 
-    def fetch(self, path, query='', postdata=None):
+    def fetch(self, path, query="", postdata=None):
         "Perform an HTTP GET or POST depending on whether postdata is present"
         url = self.build_url(path, query=query)
         self.logger.debug("URL: %s" % url)
@@ -200,7 +227,7 @@ class V1Server(object):
                 self.logger.error(postdata)
             raise exception
 
-    def get_xml(self, path, query='', postdata=None):
+    def get_xml(self, path, query="", postdata=None):
         verb = "HTTP POST to " if postdata else "HTTP GET from "
         msg = verb + path
         self.logger.info(msg)
@@ -219,85 +246,79 @@ class V1Server(object):
             if exception.code == 404:
                 raise V1AssetNotFoundError(exception)
             elif exception.code == 400:
-                raise V1Error('\n' + str(body))
+                raise V1Error("\n" + str(body))
             else:
                 raise V1Error(exception)
         return document
 
-
-    def get_asset_xml(self, asset_type_name, oid, moment='none'):
+    def get_asset_xml(self, asset_type_name, oid, moment="none"):
         """
         Returns an array of asset xmls. possible moment values are:
         'every' or 'none' or the specific moment
         """
-        if moment == 'none' or moment is None:
-            path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
+        if moment == "none" or moment is None:
+            path = "/{0}/Data/{1}/{2}".format(self.rest_api_path, asset_type_name, oid)
             # return self.get_xml(path) # old style, not history-aware
             return self.get_xml(path)
 
-        elif moment == 'every':
+        elif moment == "every":
             path = "/{0}/Hist/{1}/{2}".format(self.rest_api_path, asset_type_name, oid)
             return self.get_xml(path)
 
         elif isinstance(moment, int):
-            path = "/{0}/Data/{1}/{2}/{3}".format(self.rest_api_path, asset_type_name, oid, moment)
+            path = "/{0}/Data/{1}/{2}/{3}".format(
+                self.rest_api_path, asset_type_name, oid, moment
+            )
             return self.get_xml(path)
 
         else:
             raise V1Error("Invalid moment passed for asset.")
 
-
     def get_query_xml(self, api, asset_type_name, where=None, sel=None):
-        path = '/{0}/{1}/{2}'.format(self.rest_api_path, api, asset_type_name)
+        path = "/{0}/{1}/{2}".format(self.rest_api_path, api, asset_type_name)
         query = {}
         if where is not None:
-            query['Where'] = where
+            query["Where"] = where
         if sel is not None:
-            query['sel'] = sel
+            query["sel"] = sel
         return self.get_xml(path, query=query)
 
-
     def get_meta_xml(self, asset_type_name):
-        path = '/meta.v1/{0}'.format(asset_type_name)
+        path = "/meta.v1/{0}".format(asset_type_name)
         return self.get_xml(path)
-
 
     def execute_operation(self, asset_type_name, oid, opname):
-        path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
-        query = {'op': opname}
+        path = "/{0}/Data/{1}/{2}".format(self.rest_api_path, asset_type_name, oid)
+        query = {"op": opname}
         return self.get_xml(path, query=query, postdata={})
 
-
     def get_attr(self, asset_type_name, oid, attrname):
-        path = '/{0}/Data/{1}/{2}/{3}'.format(self.rest_api_path, asset_type_name, oid, attrname)
+        path = "/{0}/Data/{1}/{2}/{3}".format(
+            self.rest_api_path, asset_type_name, oid, attrname
+        )
         return self.get_xml(path)
 
-
-    def create_asset(self, asset_type_name, xmldata, context_oid=''):
+    def create_asset(self, asset_type_name, xmldata, context_oid=""):
         body = ElementTree.tostring(xmldata, encoding="utf-8")
         query = {}
         if context_oid:
-            query = {'ctx': context_oid}
-        path = '/{0}/Data/{1}'.format(self.rest_api_path, asset_type_name)
+            query = {"ctx": context_oid}
+        path = "/{0}/Data/{1}".format(self.rest_api_path, asset_type_name)
         return self.get_xml(path, query=query, postdata=body)
 
-
     def update_asset(self, asset_type_name, oid, update_doc):
-        newdata = ElementTree.tostring(update_doc, encoding='utf-8')
-        path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
+        newdata = ElementTree.tostring(update_doc, encoding="utf-8")
+        path = "/{0}/Data/{1}/{2}".format(self.rest_api_path, asset_type_name, oid)
         return self.get_xml(path, postdata=newdata)
 
-
     def get_attachment_blob(self, attachment_id, blobdata=None):
-        path = '/attachment.v1/{0}'.format(attachment_id)
+        path = "/attachment.v1/{0}".format(attachment_id)
         exception, body = self.fetch(path, postdata=blobdata)
         if exception:
             raise exception
         return body
 
-
     set_attachment_blob = get_attachment_blob
-
 
     def get(self, url):
         try:

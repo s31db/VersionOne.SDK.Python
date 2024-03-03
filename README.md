@@ -1,4 +1,5 @@
 # VersionOne Python SDK #
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 _Fork officially distributed via PyPi (pip) as: __v1pysdk___<br>
 _An older version of this package, which follows flows with this version numbering, was distributed as 'v1pysdk-unoffical'_
