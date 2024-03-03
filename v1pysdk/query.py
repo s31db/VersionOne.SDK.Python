@@ -11,7 +11,7 @@ class V1Query(object):
   """A fluent query object. Use .select() and .where() to add items to the
   select list and the query criteria, then iterate over the object to execute
   and use the query results."""
-  
+
   def __init__(self, asset_class, sel_string=None, filterexpr=None):
     "Takes the asset class we will be querying"
     # warning: some of these are defined in C code 
@@ -119,25 +119,13 @@ class V1Query(object):
       return self._findIn_string
 
   def run_single_query(self, url_params={}, api="Data"):
-      urlquery = urlencode(url_params)
-      urlpath = '/rest-1.v1/{1}/{0}'.format(self._asset_class._v1_asset_type_name, api)
-      # warning: tight coupling ahead
-      xml = self._asset_class._v1_v1meta.server.get_xml(urlpath, query=urlquery)
-      # xml is an elementtree::Element object so query the total of items available and determine
-      # the pageStart within that total set.
-      total = int(xml.get('total'))
-      pageStart = int(xml.get('pageStart'))
-      pageSize =  int(xml.get('pageSize'))
-      if pageStart >= total:
-        # requested past end of total available
-        self._length = 0
-      elif (total - pageStart) < pageSize:
-        # not enough to fill the pageSize, so length is what's left
-        self._length = total - pageStart
-      else:
-        # pageSize can be met, so it is
-        self._length = pageSize
-      self._maxlength = total
+      where = None
+      sel = None
+      if 'where' in url_params:
+        where = url_params['where']
+      if 'sel' in url_params:
+        sel = url_params['sel']
+      xml = self.asset_class._v1_v1meta.server.get_query_xml(api, self.asset_class._v1_asset_type_name, where, sel)
       return xml
 
   def run_query(self):
@@ -276,14 +264,14 @@ class V1Query(object):
               self._asof_list.append(asof)
               self._dirty_query = True
       return self
-    
+
   def first(self):
     return list(self)[0]
-    
+
   def set(self, **updatelist):
     for found_asset in self:
       found_asset.pending(updatelist)
-      
+
   def __getattr__(self, attrname):
     """ Return a sequence of the attribute from all matched results
 
