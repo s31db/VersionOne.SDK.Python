@@ -1,11 +1,12 @@
 import sys
 
-if (sys.version_info < (3,0)):
+if (sys.version_info < (3, 0)):
   from urllib import urlencode
 else:
   from urllib.parse import urlencode
 
 from .string_utils import split_attribute
+
 
 class V1Query(object):
   """A fluent query object. Use .select() and .where() to add items to the
@@ -14,11 +15,11 @@ class V1Query(object):
 
   def __init__(self, asset_class, sel_string=None, filterexpr=None):
     "Takes the asset class we will be querying"
-    # warning: some of these are defined in C code 
+    # warning: some of these are defined in C code
     self._asset_class = asset_class
     self._where_terms = {}
     self._sel_list = []
-    self._sel_string = None # cached copy of generated string from sel_list
+    self._sel_string = None  # cached copy of generated string from sel_list
     self._asof_list = []
     self._query_results = []
     self._query_has_run = False
@@ -28,9 +29,9 @@ class V1Query(object):
     self._find_string = None
     self._findIn_string = None
     self._sort_list = []
-    self._sort_string = None # cached copy of generated string from sort_list
+    self._sort_string = None  # cached copy of generated string from sort_list
     self._length = 0
-    self._max_length = 0 # total possible number
+    self._max_length = 0  # total possible number
     self._dirty_query = False
 
     # sel_string is used when we need to query a single attribute that wasn't retrieved by default.
@@ -76,13 +77,13 @@ class V1Query(object):
     return self._max_length
 
   def queryAll(self):
-    """Forces immediate running of the query so the caller has the option to control when the bulk read 
+    """Forces immediate running of the query so the caller has the option to control when the bulk read
        query occurs rather than only getting piecemeal queries as various fields are needed."""
     self._run_query_if_needed()
     return self
 
   def reQueryAll(self):
-    """Forces immediate re-running of the query so the caller has the option to control when the bulk read 
+    """Forces immediate re-running of the query so the caller has the option to control when the bulk read
        query occurs rather than only getting piecemeal queries as various fields are needed.
        Also allows a query object to be re-used for cases where paging is the only thing that has changed.
     """
@@ -91,42 +92,47 @@ class V1Query(object):
     return self
 
   def get_sel_string(self):
-      if not self.sel_string:
-        self.sel_string = ','.join(self._sel_list)
-      return self.sel_string
+    if not self.sel_string:
+      self.sel_string = ','.join(self._sel_list)
+    return self.sel_string
 
   def get_sort_string(self):
-      if not self._sort_string:
-        self._sort_string = ','.join(self._sort_list)
-      return self._sort_string
+    if not self._sort_string:
+      self._sort_string = ','.join(self._sort_list)
+    return self._sort_string
 
   def get_where_string(self):
-      terms = list("{0}='{1}'".format(attrname, criteria) for attrname, criteria in self._where_terms.items())
-      if self._where_string:
-          terms.append(self._where_string)
-      return ';'.join(terms)
+    terms = list("{0}='{1}'".format(attrname, criteria) for attrname, criteria in self._where_terms.items())
+    if self._where_string:
+      terms.append(self._where_string)
+    return ';'.join(terms)
 
   def get_page_size(self):
-      return self._page_size
+    return self._page_size
 
   def get_page_start(self):
-      return self._page_start
+    return self._page_start
 
   def get_find_string(self):
-      return self._find_string
+    return self._find_string
 
   def get_findIn_string(self):
-      return self._findIn_string
+    return self._findIn_string
 
   def run_single_query(self, url_params={}, api="Data"):
-      where = None
-      sel = None
-      if 'where' in url_params:
-        where = url_params['where']
-      if 'sel' in url_params:
-        sel = url_params['sel']
-      xml = self.asset_class._v1_v1meta.server.get_query_xml(api, self.asset_class._v1_asset_type_name, where, sel)
-      return xml
+    # where = None
+    # sel = None
+    # if 'where' in url_params:
+    #   where = url_params['where']
+    # if 'sel' in url_params:
+    #   sel = url_params['sel']
+    # xml = self._asset_class._v1_v1meta.server.get_query_xml(api, self._asset_class._v1_asset_type_name, where, sel)
+
+    urlquery = urlencode(url_params)
+    urlpath = '/rest-1.v1/{1}/{0}'.format(self._asset_class._v1_asset_type_name, api)
+    # warning: tight coupling ahead
+    xml = self._asset_class._v1_v1meta.server.get_xml(urlpath, query=urlquery)
+    return xml
 
   def run_query(self):
     "Actually hit the server to perform the query"
@@ -159,7 +165,7 @@ class V1Query(object):
       xml = self.run_single_query(url_params)
       self._query_results.append((xml, None))
     self._query_has_run = True
-    self._dirty_query = False # results now match the query
+    self._dirty_query = False  # results now match the query
 
   def select(self, *args, **kw):
     """Add attribute names to the select list for this query. The attributes
@@ -167,7 +173,7 @@ class V1Query(object):
     without further network traffic. Call with no arguments to clear select list."""
 
     # any calls to this invalidate our cached select string
-    self.sel_string=None
+    self.sel_string = None
     if len(args) == 0:
       if len(self._sel_list) > 0:
         self._sel_list = []
@@ -184,22 +190,22 @@ class V1Query(object):
     return self
 
   def sort(self, *args, **kw):
-    """Add order of fields to use for sorting.  Reverse sort on that field by prefacing with a 
+    """Add order of fields to use for sorting.  Reverse sort on that field by prefacing with a
     dash (e.g. '-Name'). Call with no arguments to clear sort list."""
     # Any calls to this invalidate our cached sort string
-    self._sort_string=None
+    self._sort_string = None
     if len(args) == 0:
       if len(self._sort_list) > 0:
         self._sort_list = []
         self._dirty_query = True
     else:
       for s in args:
-        labelpos=s.strip()
-        #if the field name is prepended with a -, strip that to determine the base field name
+        labelpos = s.strip()
+        # if the field name is prepended with a -, strip that to determine the base field name
         if labelpos[0] == '-':
-          labelpos=labelpos[1:]
-        labelneg='-' + labelpos
-        #only if the label in both the positive and negative sort order has never appeared before
+          labelpos = labelpos[1:]
+        labelneg = '-' + labelpos
+        # only if the label in both the positive and negative sort order has never appeared before
         if not (labelpos in self._sort_list) and not (labelneg in self._sort_list):
           self._sort_list.append(s)
           self._dirty_query = True
@@ -220,7 +226,7 @@ class V1Query(object):
 
   def page(self, size=None, start=None):
     """Add page size to limit the number returned at a time, and optionally the offset to start the page at.
-    'start' is 0 based and is the index of the first record.  
+    'start' is 0 based and is the index of the first record.
     'size' is a count of records to return.
     Both size and start are preserved between calls, but size must be specified for either to be used in
     the resulting query.
@@ -241,29 +247,29 @@ class V1Query(object):
   def find(self, text=None, field=None):
     """A very slow and inefficient search method run on the server side to search for text fields containing
     matches to the search text.
-    Must specify a field to search on that matches one of the defined field names or the entire search 
+    Must specify a field to search on that matches one of the defined field names or the entire search
     is ignored.
     Call with no arguments to clear previous find criteria."""
     if text and field:
       if self._find_string != str(text) or self._findIn_string != str(field):
-        self._dirty_query = True  
+        self._dirty_query = True
         self._find_string = str(text)
         self._findIn_string = str(field)
     elif self._find_string or self._findIn_string:
-        self._dirty_query = True
-        # clear old values
-        self._find_string=None
-        self._findIn_string=None
+      self._dirty_query = True
+      # clear old values
+      self._find_string = None
+      self._findIn_string = None
     return self
 
   def asof(self, *asofs):
-      for _asof_list in asofs:
-          if isinstance(_asof_list, str):
-              _asof_list = [_asof_list]
-          for asof in _asof_list:
-              self._asof_list.append(asof)
-              self._dirty_query = True
-      return self
+    for _asof_list in asofs:
+      if isinstance(_asof_list, str):
+        _asof_list = [_asof_list]
+      for asof in _asof_list:
+        self._asof_list.append(asof)
+        self._dirty_query = True
+    return self
 
   def first(self):
     return list(self)[0]
@@ -286,4 +292,3 @@ class V1Query(object):
     if attrname not in self._sel_list and not attrname.startswith('__'):
       self.select(attrname)
     return (getattr(i, attrname) for i in self)
-

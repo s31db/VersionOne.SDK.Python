@@ -1,5 +1,5 @@
 from testtools import TestCase
-from .v1pysdk.string_utils import split_attribute
+from v1pysdk.string_utils import split_attribute
 
 class TestStringUtils(TestCase):
 

@@ -75,18 +75,19 @@ class V1Server(object):
     def __init__(self, address="localhost", instance="VersionOne.Web", username='', password='', scheme="https",
                  instance_url=None, logparent=None, loglevel=logging.ERROR, use_password_as_token=False,
                  use_oauth_path=False):
-    scheme and object's instance_url attributes.
-    If *token* is not None a HTTP header will be added to each request.
-    :param address: target hostname
-    :param instance: instance
-    :param username: credentials (username)
-    :param password: credentials (password)
-    :param token: credentials (authentication token)
-    :param scheme: HTTP scheme
-    :param instance_url: instance URL
-    :param logparent: logger prefix
-    :param loglevel: logging level
-    """
+        """
+        scheme and object's instance_url attributes.
+        If *token* is not None a HTTP header will be added to each request.
+        :param address: target hostname
+        :param instance: instance
+        :param username: credentials (username)
+        :param password: credentials (password)
+        :param token: credentials (authentication token)
+        :param scheme: HTTP scheme
+        :param instance_url: instance URL
+        :param logparent: logger prefix
+        :param loglevel: logging level
+        """
         if instance_url:
             self.instance_url = instance_url
             parsed = urlparse(instance_url)
@@ -202,13 +203,15 @@ class V1Server(object):
         verb = "HTTP POST to " if postdata else "HTTP GET from "
         msg = verb + path
         self.logger.info(msg)
+        print(path, query)
         exception, body = self.fetch(path, query=query, postdata=postdata)
         if exception:
             self.handle_non_xml_response(body, exception, msg, postdata)
 
-            self.logger.warn("{0} during {1}".format(exception, msg))
-            if postdata is not None:
-                self.logger.warn(postdata)
+        self.logger.warning("{0} during {1}".format(exception, msg))
+        if postdata is not None:
+            self.logger.warn(postdata)
+
         document = ElementTree.fromstring(body)
         if exception:
             exception.xmldoc = document
@@ -220,12 +223,13 @@ class V1Server(object):
                 raise V1Error(exception)
         return document
 
+
     def get_asset_xml(self, asset_type_name, oid, moment='none'):
         """
         Returns an array of asset xmls. possible moment values are:
         'every' or 'none' or the specific moment
         """
-        if moment == 'none':
+        if moment == 'none' or moment is None:
             path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
             # return self.get_xml(path) # old style, not history-aware
             return self.get_xml(path)
@@ -241,8 +245,9 @@ class V1Server(object):
         else:
             raise V1Error("Invalid moment passed for asset.")
 
-    def get_query_xml(self, asset_type_name, where=None, sel=None):
-        path = '/{0}/Data/{1}'.format(self.rest_api_path, asset_type_name)
+
+    def get_query_xml(self, api, asset_type_name, where=None, sel=None):
+        path = '/{0}/{1}/{2}'.format(self.rest_api_path, api, asset_type_name)
         query = {}
         if where is not None:
             query['Where'] = where
@@ -250,18 +255,22 @@ class V1Server(object):
             query['sel'] = sel
         return self.get_xml(path, query=query)
 
+
     def get_meta_xml(self, asset_type_name):
         path = '/meta.v1/{0}'.format(asset_type_name)
         return self.get_xml(path)
+
 
     def execute_operation(self, asset_type_name, oid, opname):
         path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
         query = {'op': opname}
         return self.get_xml(path, query=query, postdata={})
 
+
     def get_attr(self, asset_type_name, oid, attrname):
         path = '/{0}/Data/{1}/{2}/{3}'.format(self.rest_api_path, asset_type_name, oid, attrname)
         return self.get_xml(path)
+
 
     def create_asset(self, asset_type_name, xmldata, context_oid=''):
         body = ElementTree.tostring(xmldata, encoding="utf-8")
@@ -271,10 +280,12 @@ class V1Server(object):
         path = '/{0}/Data/{1}'.format(self.rest_api_path, asset_type_name)
         return self.get_xml(path, query=query, postdata=body)
 
+
     def update_asset(self, asset_type_name, oid, update_doc):
         newdata = ElementTree.tostring(update_doc, encoding='utf-8')
         path = '/{0}/Data/{1}/{2}'.format(self.rest_api_path, asset_type_name, oid)
         return self.get_xml(path, postdata=newdata)
+
 
     def get_attachment_blob(self, attachment_id, blobdata=None):
         path = '/attachment.v1/{0}'.format(attachment_id)
@@ -283,7 +294,9 @@ class V1Server(object):
             raise exception
         return body
 
+
     set_attachment_blob = get_attachment_blob
+
 
     def get(self, url):
         try:
