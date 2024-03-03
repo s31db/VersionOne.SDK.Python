@@ -1,12 +1,6 @@
-**MAINTAINER NEEDED**  
-_This fork is no longer maintained though at last check (2023-09-06) it does still seem to be one of the most up-to-date._  
-If you'd like to make your fork the primary one, please contact me and I'd be happy to pass the PyPi ownership to you.
-
----
-
 # VersionOne Python SDK #
 
-_Officially distributed via PyPi (pip) as: __v1pysdk___<br>
+_Fork officially distributed via PyPi (pip) as: __v1pysdk___<br>
 _An older version of this package, which follows flows with this version numbering, was distributed as 'v1pysdk-unoffical'_
 
 The VersionOne Python SDK is an open-source and community supported client for the VersionOne API.
@@ -16,7 +10,7 @@ As an open-sourced and community supported project, the VersionOne Python SDK is
 That said, there are a number of options for getting your questions addressed:
 
 * [StackOverflow](http://stackoverflow.com/questions/tagged/versionone): For asking questions of the VersionOne Development Community.
-* [GitHub Issues](https://github.com/mtalexan/VersionOne.SDK.Python/issues): For submitting issues that others may try to address.
+* [GitHub Issues](https://github.com/s31db/VersionOne.SDK.Python/issues): For submitting issues that others may try to address.
 
 In general, StackOverflow is your best option for getting support for the VersionOne Python SDK.
 

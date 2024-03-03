@@ -43,7 +43,7 @@ jobs:
       uses: SuperKogito/URLs-checker@0.1.2
       with:
         # The project base path.
-        git_path: https://github.com/mtalexan/VersionOne.SDK.Python
+        git_path: https://github.com/s31db/VersionOne.SDK.Python
 
         # A comma-separated list of file types to cover in the URL checks
         file_types: .md,.py

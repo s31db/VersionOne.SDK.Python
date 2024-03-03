@@ -34,7 +34,7 @@ with open("README.md", "r") as f:
 
 setup(
   name = "v1pysdk",
-  version = "0.6.2",
+  version = "0.7.0",
   description = "VersionOne API client",
   author = "Joe Koberg (VersionOne, Inc.)",
   author_email = "Joe.Koberg@versionone.com",
@@ -42,11 +42,11 @@ setup(
   long_description_content_type = "text/markdown",
   license = "MIT/BSD",
   keywords = "versionone v1 api sdk",
-  url = "http://github.com/mtalexan/VersionOne.SDK.Python.git",
+  url = "http://github.com/s31db/VersionOne.SDK.Python.git",
   project_urls={
-      'Documentation': 'http://github.com/mtalexan/VersionOne.SDK.Python.git',
-      'Source' : 'http://github.com/mtalexan/VersionOne.SDK.Python.git',
-      'Tracker' : 'http://github.com/mtalexan/VersionOne.SDK.Python.git/issues',
+      'Documentation': 'http://github.com/s31db/VersionOne.SDK.Python.git',
+      'Source' : 'http://github.com/s31db/VersionOne.SDK.Python.git',
+      'Tracker' : 'http://github.com/s31db/VersionOne.SDK.Python.git/issues',
       },
 
   packages = [
