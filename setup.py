@@ -18,6 +18,20 @@ else:
 with open("README.md", "r") as f:
     long_description = f.read()
 
+install_requires = [
+    'future'
+]
+
+if (sys.version_info < (3,0)):
+    # has a different name if supporting Python3
+    install_requires.append('python-ntlm')
+else:
+    install_requires.append('python-ntlm3')
+
+# get our long description from the README.md
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 setup(
   name = "v1pysdk",
   version = "0.6.2",

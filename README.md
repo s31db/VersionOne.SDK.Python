@@ -7,7 +7,7 @@ If you'd like to make your fork the primary one, please contact me and I'd be ha
 # VersionOne Python SDK #
 
 _Officially distributed via PyPi (pip) as: __v1pysdk___<br>
-_An older version of this package, which flows with this version numbering, was distributed as 'v1pysdk-unoffical'_
+_An older version of this package, which follows flows with this version numbering, was distributed as 'v1pysdk-unoffical'_
 
 The VersionOne Python SDK is an open-source and community supported client for the VersionOne API.
 
@@ -245,6 +245,81 @@ with V1Meta(
           print s.Name
 ```
 
+#### Limiting results from the server via paging
+
+  It can be easier on the client to have the server perform paging by limiting the number of
+  results returned matching a query.  Paging requires a limit on the number of items returned, and
+  an index of the first item in the list to return.
+
+  The API allows the index to be left off, which assumes a default start index of 0.
+
+```python
+    pageNum = 0
+    pageSize = 3
+    pageStart = 0
+    while True:
+        results = ( v1.Story
+                     .select('Name')
+                     .filter(str(myFilter))
+                     .sort('-Name')
+                     .page(size=pageSize, start=pageStart) 
+                  ) # Requires a new query each time
+        if not len(results):
+            break;
+        print("Page items = " + str(len(results)))
+        pageNum += 1
+        pageStart += pageSize
+        print("Page " + str(pageNum) + " : " + ',   '.join(results.Name))
+```
+
+  Alternatively the `reQueryAll()` can be used to force re-querying of the content based on updated 
+  query settings to make paging easier to implement.
+
+```python
+    pageNum = 0
+    pageSize = 3
+    pageStart = 0
+    results = ( v1.Story
+                .select('Name')
+                .filter(str(myFilter))
+                .sort('-Name')
+               )
+
+    while True:
+        results = results.page(size=pageSize, start=pageStart).reQueryAll()
+        if not len(results):
+            break;
+        pageNum += 1
+        pageStart += pageSize
+        print("Page " + str(pageNum) + " : " + ',   '.join(results.Name))
+```
+
+#### Sorting
+
+  Sorting can be included in the query by specifying the order of the columns to sort on, and whether
+  those columns should be sorted ascending or descending.  The default sort order is ascending.
+
+  sort() operates like select(), where field names are listed in quotes and may be listed as separate arguments
+  to a single sort call, separate sort calls, or a mixture of both.
+  Sorting descending requires the field name to be prefaced with a dash, '-'.  
+  Fields may only be listed in the sort order once, with repeats being ignored.
+
+  To sort in reverse alphabetical order of names, then on Estimate time, then on Detailed Estimate time:
+
+```python
+    results = v1.Story.select('Name').filter(str(myFilter)).sort('-Name','Estimate').sort('DetailedEstimate')
+    print '\n'.join(results.Name)
+```
+#### Matched searching
+
+  Searching, while possible, is very server intensive and should be avoided as much as possible.  Server-side
+  searching can be whole-word matched within a single field.  For this reason it should be significantly limited
+  with appropriate filter/where commands.
+
+```python
+    results = v1.Story.select('Name').filter(str(myFilter)).find('Get a', field='Name')
+    print ', '.join(results.Name) #=> Get a handle on filtering, Get a toolkit for ease of use
+```
 #### Limiting results from the server via paging
 
   It can be easier on the client to have the server perform paging by limiting the number of

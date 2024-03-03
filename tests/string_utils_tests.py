@@ -1,5 +1,5 @@
 from testtools import TestCase
-from v1pysdk.string_utils import split_attribute
+from .v1pysdk.string_utils import split_attribute
 
 class TestStringUtils(TestCase):
 
@@ -29,3 +29,4 @@ class TestStringUtils(TestCase):
                           ,split_attribute("RegressionPlan.RegressionSuites[AssetState!='Dead'].TestSets[AssetState!='Dead'].Environment.@DistinctCount") )
         self.assertEqual(["Scope","ChildrenMeAndDown","Workitems:Story[ChildrenMeAndDown.ToDo.@Sum!='0.0']","Estimate","@Sum"]
                           ,split_attribute("Scope.ChildrenMeAndDown.Workitems:Story[ChildrenMeAndDown.ToDo.@Sum!='0.0'].Estimate.@Sum") )
+

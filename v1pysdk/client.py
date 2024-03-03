@@ -75,6 +75,18 @@ class V1Server(object):
     def __init__(self, address="localhost", instance="VersionOne.Web", username='', password='', scheme="https",
                  instance_url=None, logparent=None, loglevel=logging.ERROR, use_password_as_token=False,
                  use_oauth_path=False):
+    scheme and object's instance_url attributes.
+    If *token* is not None a HTTP header will be added to each request.
+    :param address: target hostname
+    :param instance: instance
+    :param username: credentials (username)
+    :param password: credentials (password)
+    :param token: credentials (authentication token)
+    :param scheme: HTTP scheme
+    :param instance_url: instance URL
+    :param logparent: logger prefix
+    :param loglevel: logging level
+    """
         if instance_url:
             self.instance_url = instance_url
             parsed = urlparse(instance_url)
