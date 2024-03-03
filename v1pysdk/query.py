@@ -132,6 +132,23 @@ class V1Query(object):
     urlpath = '/rest-1.v1/{1}/{0}'.format(self._asset_class._v1_asset_type_name, api)
     # warning: tight coupling ahead
     xml = self._asset_class._v1_v1meta.server.get_xml(urlpath, query=urlquery)
+
+    # xml is an elementtree::Element object so query the total of items available and determine
+    # the pageStart within that total set.
+    if 'total' in xml:
+      total = int(xml.get('total'))
+      pageStart = int(xml.get('pageStart'))
+      pageSize = int(xml.get('pageSize'))
+      if pageStart >= total:
+        # requested past end of total available
+        self._length = 0
+      elif (total - pageStart) < pageSize:
+        # not enough to fill the pageSize, so length is what's left
+        self._length = total - pageStart
+      else:
+        # pageSize can be met, so it is
+        self._length = pageSize
+      self._maxlength = total
     return xml
 
   def run_query(self):
@@ -180,7 +197,10 @@ class V1Query(object):
         self._dirty_query = True
     else:
       for sel in args:
-        parts = split_attribute(sel)
+        if sel in ('ChildrenAndDown.ToDo.@Sum', "ChildrenAndDown[AssetState!='Dead'].ToDo.@Sum"):
+          parts = [sel]
+        else:
+          parts = split_attribute(sel)
         for i in range(1, len(parts)):
           pname = '.'.join(parts[:i])
           if pname not in self._sel_list:

@@ -212,7 +212,10 @@ class V1Meta(object):
 
   def add_attribute_to_output(self, output, relation, values):
     if self.is_attribute_qualified(relation):
-      (container, leaf) = self.split_relation_to_container_and_leaf(relation)
+      if relation in ('ChildrenAndDown.ToDo.@Sum', "ChildrenAndDown[AssetState!='Dead'].ToDo.@Sum"):
+        output[relation] = values[0]
+      else:
+        (container, leaf) = self.split_relation_to_container_and_leaf(relation)
 
       for (asset, value) in zip(self.get_related_assets(output, container), values):
          # for calculated values it is not an asset so take the value directly
@@ -221,7 +224,11 @@ class V1Meta(object):
         else:
           output[relation] = value
     else:
-      output[relation] = values[0]
+      if relation == 'TaggedWith':
+        output[relation] = values
+      else:
+        output[relation] = values[0]
+
       
   def is_attribute_qualified(self, relation):
     parts = split_attribute(relation)
