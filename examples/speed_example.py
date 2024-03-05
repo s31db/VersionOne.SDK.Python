@@ -7,7 +7,7 @@ meta = V1Meta()
 t0 = time.time()
 
 
-def process_queries(queries):
+def process_queries():
     for query in (meta.asset_class(type.Name) for type in meta.AssetType):
         for asset in query:
             try:

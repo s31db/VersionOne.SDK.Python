@@ -17,7 +17,7 @@ class PublicTestServerConnection:
     instance_url = "https://www14.v1host.com/v1sdktesting"
     token = "1.VdeWXQVNdY0yVpYexTtznCxcWTQ="
 
-    def __init__():
+    def __init__(self):
         pass
 
     @staticmethod

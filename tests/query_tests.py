@@ -21,7 +21,6 @@ class TestV1Query(TestV1CommonSetup):
         with PublicTestServerConnection.getV1Meta() as v1:
             querySucceeded = True
             size = 0
-            item = None
             try:
                 items = v1.AssetType.select("Name").where(Name="Story").page(size=5)
                 size = len(list(items))
@@ -38,7 +37,6 @@ class TestV1Query(TestV1CommonSetup):
         with PublicTestServerConnection.getV1Meta() as v1:
             querySucceeded = True
             size = 0
-            item = None
             try:
                 items = v1.Story.select("Name").page(size=5)
                 size = len(list(items))
@@ -59,7 +57,6 @@ class TestV1Query(TestV1CommonSetup):
         with PublicTestServerConnection.getV1Meta() as v1:
             querySucceeded = True
             size = 0
-            item = None
             try:
                 items = v1.Epic.select("Name").page(size=5)
                 size = len(list(items))
@@ -80,7 +77,6 @@ class TestV1Query(TestV1CommonSetup):
         with PublicTestServerConnection.getV1Meta() as v1:
             querySucceeded = True
             size = 0
-            item = None
             try:
                 items = v1.Scope.select("Name").page(size=5)
                 size = len(list(items))
@@ -97,7 +93,6 @@ class TestV1Query(TestV1CommonSetup):
         with PublicTestServerConnection.getV1Meta() as v1:
             querySucceeded = True
             size = 0
-            item = None
             try:
                 items = v1.Task.select("Name").page(size=5)
                 size = len(list(items))
@@ -150,8 +145,6 @@ class TestV1Query(TestV1CommonSetup):
         """Creates a story, then does a find to see if it can be located by a partial name from a separate
         connection instance.
         """
-        searchName = ""
-        exceptionReached = False
         with PublicTestServerConnection.getV1Meta() as v1create:
             createdStory = self._create_story(v1create)
 
@@ -160,25 +153,13 @@ class TestV1Query(TestV1CommonSetup):
             self.addDetail("search-name", text_content(searchName))
 
         with PublicTestServerConnection.getV1Meta() as v1find:
-            findItems = None
-            findItem = None
-            size = 0
-            firstName = ""
-            try:
-                findItems = list(
-                    v1find.Story.select("Name").find(text=searchName, field="Name")
-                )
-                findItem = findItems[0]
-                size = len(findItems)
-                firstName = findItem.Name
-            except Exception as e:
-                raise e
-                # exceptions here are almost always because the query failed to work right
-                exceptionReached = True
-            else:
-                # at the very least we should have found the one we based the search string on
-                self.assertThat(size, GreaterThan(0))
-                # results need to contain the string we searched for
-                self.assertThat(firstName, Contains(searchName))
-
-            self.assertFalse(exceptionReached)
+            findItems = list(
+                v1find.Story.select("Name").find(text=searchName, field="Name")
+            )
+            findItem = findItems[0]
+            size = len(findItems)
+            firstName = findItem.Name
+            # at the very least we should have found the one we based the search string on
+            self.assertThat(size, GreaterThan(0))
+            # results need to contain the string we searched for
+            self.assertThat(firstName, Contains(searchName))

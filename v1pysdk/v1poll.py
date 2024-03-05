@@ -15,7 +15,7 @@ class V1Poll(object):
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, exception_type, exception_value, traceback):
         self.poll()
 
     def run_on_new(self, asset_type_name, handler_function):
