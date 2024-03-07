@@ -14,7 +14,7 @@ class V1Query(object):
     and use the query results."""
 
     def __init__(self, asset_class, sel_string=None, filterexpr=None):
-        "Takes the asset class we will be querying"
+        """Takes the asset class we will be querying"""
         # warning: some of these are defined in C code
         self._asset_class = asset_class
         self._where_terms = {}
@@ -95,9 +95,9 @@ class V1Query(object):
         return self
 
     def get_sel_string(self):
-        if not self.sel_string:
-            self.sel_string = ",".join(self._sel_list)
-        return self.sel_string
+        if not self._sel_string:
+            self._sel_string = ",".join(self._sel_list)
+        return self._sel_string
 
     def get_sort_string(self):
         if not self._sort_string:
@@ -156,11 +156,11 @@ class V1Query(object):
             else:
                 # pageSize can be met, so it is
                 self._length = pageSize
-            self._maxlength = total
+            self._max_length = total
         return xml
 
     def run_query(self):
-        "Actually hit the server to perform the query"
+        """Actually hit the server to perform the query"""
         url_params = {}
         if self.get_sel_string():
             url_params["sel"] = self.get_sel_string()
@@ -198,7 +198,7 @@ class V1Query(object):
         without further network traffic. Call with no arguments to clear select list."""
 
         # any calls to this invalidate our cached select string
-        self.sel_string = None
+        self._sel_string = None
         if len(args) == 0:
             if len(self._sel_list) > 0:
                 self._sel_list = []

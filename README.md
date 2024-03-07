@@ -584,7 +584,7 @@ with V1Meta(
 
 ## Installation
 
-run `python setup.py install`, or just copy the v1pysdk folder into your PYTHONPATH.
+run `pip install .`, or just copy the v1pysdk folder into your PYTHONPATH.
 
 ## Testing
 

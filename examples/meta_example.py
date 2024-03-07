@@ -6,9 +6,9 @@ my_story = v1.Story("1005")
 
 print(my_story.Name)
 # 'New Story 2'
-my_story.Owners
+print(my_story.Owners)
 # [<v1pysdk.v1meta.Member object at 0x02AD9710>]
-my_story.Scope
+print(my_story.Scope)
 # <v1pysdk.v1meta.Scope object at 0x02AB2550>
 
 

@@ -6,6 +6,7 @@ try:
     url, username, password = sys.argv[1:3]
 except ValueError:
     print("Please supply command line arguments")
+    sys.exit(1)
 
 v1 = V1Meta(instance_url=url, username=username, password=password)
 

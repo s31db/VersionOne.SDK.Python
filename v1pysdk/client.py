@@ -81,7 +81,7 @@ class V1AssetNotFoundError(V1Error):
 
 
 class V1Server(object):
-    "Accesses a V1 HTTP server as a client of the XML API protocol"
+    """Accesses a V1 HTTP server as a client of the XML API protocol"""
 
     def __init__(
         self,
@@ -169,7 +169,7 @@ class V1Server(object):
         return response
 
     def build_url(self, path, query="", fragment="", params=""):
-        "So we dont have to interpolate urls ad-hoc"
+        """So we dont have to interpolate urls ad-hoc"""
         path = self.instance + "/" + path.strip("/")
         if isinstance(query, dict):
             query = urlencode(query)
@@ -196,7 +196,7 @@ class V1Server(object):
             )
 
     def fetch(self, path, query="", postdata=None):
-        "Perform an HTTP GET or POST depending on whether postdata is present"
+        """Perform an HTTP GET or POST depending on whether postdata is present"""
         url = self.build_url(path, query=query)
         self.logger.debug("URL: %s" % url)
         try:
@@ -238,7 +238,7 @@ class V1Server(object):
 
         self.logger.warning("{0} during {1}".format(exception, msg))
         if postdata is not None:
-            self.logger.warn(postdata)
+            self.logger.warning(postdata)
 
         document = ElementTree.fromstring(body)
         if exception:
@@ -292,10 +292,15 @@ class V1Server(object):
         query = {"op": opname}
         return self.get_xml(path, query=query, postdata={})
 
-    def get_attr(self, asset_type_name, oid, attrname):
-        path = "/{0}/Data/{1}/{2}/{3}".format(
-            self.rest_api_path, asset_type_name, oid, attrname
-        )
+    def get_attr(self, asset_type_name, oid, attrname, moment=None):
+        if moment:
+            path = "/{0}/Data/{1}/{2}/{4}/{3}".format(
+                self.rest_api_path, asset_type_name, oid, attrname, moment
+            )
+        else:
+            path = "/{0}/Data/{1}/{2}/{3}".format(
+                self.rest_api_path, asset_type_name, oid, attrname
+            )
         return self.get_xml(path)
 
     def create_asset(self, asset_type_name, xmldata, context_oid=""):

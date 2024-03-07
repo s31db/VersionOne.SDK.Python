@@ -21,7 +21,7 @@ class V1Meta(object):
         self._memoized_data = {}
 
     def __getattr__(self, attr):
-        "Dynamically build asset type classes when someone tries to get attrs"
+        """Dynamically build asset type classes when someone tries to get attrs"""
         "that we don't have."
         return self.asset_class(attr)
 
