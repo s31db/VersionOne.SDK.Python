@@ -143,7 +143,7 @@ class V1Query(object):
 
         # xml is an elementtree::Element object so query the total of items available and determine
         # the pageStart within that total set.
-        if "total" in xml:
+        if "total" in xml.attrib:
             total = int(xml.get("total"))
             pageStart = int(xml.get("pageStart"))
             pageSize = int(xml.get("pageSize"))
