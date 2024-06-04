@@ -21,7 +21,7 @@ class PublicTestServerConnection:
         pass
 
     @staticmethod
-    def getV1Meta():
+    def getV1Meta() -> v1pysdk.V1Meta:
         """Creates a V1Meta object from the default configuration and returns it"""
         # If we couldn't import the v1pysdk, we can't create the object
         if not importedOk:

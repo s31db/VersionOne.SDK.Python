@@ -1,47 +1,22 @@
-import logging, time, base64
+import logging
 
-import sys
+from urllib.request import (
+    Request,
+    HTTPBasicAuthHandler,
+    HTTPCookieProcessor,
+    HTTPPasswordMgrWithDefaultRealm,
+    build_opener,
+)
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.parse import urlunparse, urlparse
 
-if sys.version_info < (3, 0):
-    # Python2 way of doing this
-    import urllib2 as theUrlLib  # must be a name matching the Python3 urllib.request
-    from urllib2 import (
-        Request,
-        urlopen,
-        HTTPError,
-        HTTPBasicAuthHandler,
-        HTTPCookieProcessor,
-    )
-    from urllib import urlencode
-    from urlparse import urlunparse, urlparse
-else:
-    # Python3 way of doing this
-    import urllib.request as theUrlLib  # must be a name matching the Python2 urllib2
-    import urllib.error, urllib.parse
-    from urllib.request import (
-        Request,
-        urlopen,
-        HTTPBasicAuthHandler,
-        HTTPCookieProcessor,
-    )
-    from urllib.error import HTTPError
-    from urllib.parse import urlencode
-    from urllib.parse import urlunparse, urlparse
-
-try:
-    from xml.etree import ElementTree
-    from xml.etree.ElementTree import Element
-except ImportError:
-    from elementtree import ElementTree
-    from elementtree.ElementTree import Element
+from xml.etree import ElementTree
 
 NTLM_FOUND = False
 
 try:
-    if sys.version_info < (3, 0):
-        from ntlm.HTTPNtlmAuthHandler import HTTPNtlmAuthHandler
-    else:
-        from ntlm3.HTTPNtlmAuthHandler import HTTPNtlmAuthHandler
+    from ntlm3.HTTPNtlmAuthHandler import HTTPNtlmAuthHandler
 except ImportError:
     logging.warn("Windows integrated authentication module (ntlm) not found.")
 else:
@@ -110,6 +85,10 @@ class V1Server(object):
         :param use_password_as_token: Use password as token
         :param use_oauth_path: Use OAuth path
         """
+        modulelogname = "v1pysdk.client"
+        logname = "%s.%s" % (logparent, modulelogname) if logparent else None
+        self.logger = logging.getLogger(logname)
+        self.logger.setLevel(loglevel)
         if instance_url:
             self.instance_url = instance_url
             parsed = urlparse(instance_url)
@@ -124,10 +103,6 @@ class V1Server(object):
         self.AUTH_HANDLERS = [HTTPBasicAuthHandler]
         if NTLM_FOUND:
             self.AUTH_HANDLERS.append(CustomHTTPNtlmAuthHandler)
-        modulelogname = "v1pysdk.client"
-        logname = "%s.%s" % (logparent, modulelogname) if logparent else None
-        self.logger = logging.getLogger(logname)
-        self.logger.setLevel(loglevel)
         self.username = username
         self.password = password
         self.use_password_as_token = use_password_as_token
@@ -140,14 +115,14 @@ class V1Server(object):
 
     def _install_opener(self):
         base_url = self.build_url("")
-        password_manager = theUrlLib.HTTPPasswordMgrWithDefaultRealm()
+        password_manager = HTTPPasswordMgrWithDefaultRealm()
         password_manager.add_password(
             realm=None, uri=base_url, user=self.username, passwd=self.password
         )
         handlers = [
             HandlerClass(password_manager) for HandlerClass in self.AUTH_HANDLERS
         ]
-        self.opener = theUrlLib.build_opener(*handlers)
+        self.opener = build_opener(*handlers)
         if self.use_password_as_token:
             self.opener.addheaders.append(("Authorization", "Bearer " + self.password))
         self.opener.add_handler(HTTPCookieProcessor())
@@ -159,11 +134,11 @@ class V1Server(object):
         return response
 
     def http_post(self, url, data=""):
-        encodedData = data
+        encoded_data = data
         # encode to byte data as is needed if  it's a string
         if isinstance(data, str):
-            encodedData = data.encode("utf-8")
-        request = Request(url, encodedData)
+            encoded_data = data.encode("utf-8")
+        request = Request(url, encoded_data)
         request.add_header("Content-Type", "text/xml;charset=UTF-8")
         response = self.opener.open(request)
         return response
@@ -174,6 +149,7 @@ class V1Server(object):
         if isinstance(query, dict):
             query = urlencode(query)
         url = urlunparse((self.scheme, self.address, path, params, query, fragment))
+        self.logger.debug("Build URL: %s", url)
         return url
 
     def _debug_headers(self, headers):
@@ -210,14 +186,14 @@ class V1Server(object):
             body = response.read()
             self._debug_headers(response.headers)
             self._debug_body(body, response.headers)
-            return (None, body)
+            return None, body
         except HTTPError as e:
             if e.code == 401:
                 raise
             body = e.fp.read()
             self._debug_headers(e.headers)
             self._debug_body(body, e.headers)
-            return (e, body)
+            return e, body
 
     def handle_non_xml_response(self, body, exception, msg, postdata):
         if exception.code >= 500:
@@ -331,9 +307,9 @@ class V1Server(object):
             request.add_header("Content-Type", "text/xml;charset=UTF-8")
             response = self.opener.open(request)
             body = response.read()
-            return (None, body)
+            return None, body
         except HTTPError as e:
             if e.code == 401:
                 raise
             body = e.fp.read()
-            return (e, body)
+            return e, body

@@ -1,10 +1,4 @@
-import sys
-
-if sys.version_info < (3, 0):
-    from urllib import urlencode
-else:
-    from urllib.parse import urlencode
-
+from urllib.parse import urlencode
 from .string_utils import split_attribute
 
 
@@ -205,10 +199,8 @@ class V1Query(object):
                 self._dirty_query = True
         else:
             for sel in args:
-                if sel in (
-                    "ChildrenAndDown.ToDo.@Sum",
-                    "ChildrenAndDown[AssetState!='Dead'].ToDo.@Sum",
-                ):
+                # aggregate values for multi-value attributes. Split attribute is not necessary.
+                if ".@" in sel:
                     parts = [sel]
                 else:
                     parts = split_attribute(sel)

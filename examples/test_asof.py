@@ -1,4 +1,4 @@
-import sys, datetime, csv, os, pprint
+import datetime, csv, os
 
 from v1pysdk import V1Meta
 

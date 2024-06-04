@@ -1,10 +1,3 @@
-import sys
-
-try:
-    from xml.etree import ElementTree
-except ImportError:
-    from elementtree import ElementTree
-
 from .client import *
 from .base_asset import BaseAsset
 from .cache_decorator import memoized
@@ -227,10 +220,8 @@ class V1Meta(object):
 
     def add_attribute_to_output(self, output, relation, values):
         if self.is_attribute_qualified(relation):
-            if relation in (
-                "ChildrenAndDown.ToDo.@Sum",
-                "ChildrenAndDown[AssetState!='Dead'].ToDo.@Sum",
-            ):
+            # aggregate values for multi-value attributes. Split attribute is not necessary.
+            if ".@" in relation:
                 output[relation] = values[0]
             else:
                 (container, leaf) = self.split_relation_to_container_and_leaf(relation)

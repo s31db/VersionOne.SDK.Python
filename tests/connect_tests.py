@@ -2,22 +2,12 @@ from testtools import TestCase
 from testtools.assertions import assert_that
 from testtools.matchers import Equals
 from testtools.content import text_content
-import sys
 
-if sys.version_info >= (3, 0):
-    from urllib.error import HTTPError
-else:
-    from urllib2 import HTTPError
+from urllib.error import HTTPError
 
-# try the old version, then fallback to the new one
-try:
-    from xml.etree import ElementTree
-    from xml.etree.ElementTree import parse, fromstring, Element
-except ImportError:
-    from elementtree import ElementTree
-    from elementtree.ElementTree import parse, fromstring, Element
+from xml.etree.ElementTree import fromstring
 
-from v1pysdk.client import *
+from v1pysdk.client import V1Server
 from v1pysdk import V1Meta
 from .common_test_server import PublicTestServerConnection
 

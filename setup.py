@@ -1,28 +1,9 @@
 # To upload to PyPi, find the directions here https://packaging.python.org/tutorials/packaging-projects/
 
-
 import sys
 from setuptools import setup
 
-install_requires = ["future"]
-
-if sys.version_info < (3, 0):
-    # has a different name if supporting Python3
-    install_requires.append("python-ntlm")
-else:
-    install_requires.append("python-ntlm3")
-
-# get our long description from the README.md
-with open("README.md", "r") as f:
-    long_description = f.read()
-
-install_requires = ["future"]
-
-if sys.version_info < (3, 0):
-    # has a different name if supporting Python3
-    install_requires.append("python-ntlm")
-else:
-    install_requires.append("python-ntlm3")
+install_requires = ["future", "python-ntlm3", "PyYAML"]
 
 # get our long description from the README.md
 with open("README.md", "r") as f:
@@ -30,10 +11,12 @@ with open("README.md", "r") as f:
 
 setup(
     name="v1pysdk",
-    version="0.7.0",
+    version="0.8.0",
     description="VersionOne API client",
-    author="Joe Koberg (VersionOne, Inc.)",
-    author_email="Joe.Koberg@versionone.com",
+    # original_author="Joe Koberg (VersionOne, Inc.)",
+    author="Samuel Bastiat",
+    # original_author_email="Joe.Koberg@versionone.com",
+    author_email="s31db.github@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT/BSD",
@@ -55,17 +38,11 @@ setup(
         "License :: OSI Approved :: MIT License",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Bug Tracking",
     ),
     # it may work on others, but this is what has had basic testing
-    python_requires=">=2.5, <4",
+    python_requires=">=3.10, <4",
     tests_require=["testtools", "unittest2"],  # so testtools tests are auto-discovered
     test_suite="tests",
 )

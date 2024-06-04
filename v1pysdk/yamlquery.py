@@ -1,9 +1,4 @@
-import sys
-
-if sys.version_info < (3, 0):
-    import urllib as theUrlLib
-else:
-    import urllib.parse as theUrlLib
+import urllib.parse as parse
 import yaml
 
 
@@ -62,8 +57,8 @@ def query_params(data):
 def query_from_yaml(yamlstring):
     data = yaml.load(yamlstring)
     if data and "from" in data:
-        path = "/" + theUrlLib.quote(data["from"])
-        url = path + "?" + theUrlLib.urlencode(list(query_params(data)))
+        path = "/" + parse.quote(data["from"])
+        url = path + "?" + parse.urlencode(list(query_params(data)))
         return url
     raise Exception("Invalid yaml output: " + str(data))
 
